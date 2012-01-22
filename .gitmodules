@@ -4,3 +4,6 @@
 [submodule "pyenv"]
 	path = pyenv
 	url = git://srobo.org/pyenv.git
+[submodule "include/auth/sso"]
+	path = include/auth/sso
+	url = git://srobo.org/~plaw/sso.git
