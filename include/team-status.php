@@ -108,7 +108,9 @@ class TeamStatus
 	 */
 	public function getReviewState($name)
 	{
-		$state = self::_getReviewState($this->statusData->$name);
+		// Ignore errors that PHP may emit about the item not being set -
+		// we don't care if this is the case, since this is part of what we're trying to detect.
+		$state = self::_getReviewState(@$this->statusData->$name);
 		return $state;
 	}
 
