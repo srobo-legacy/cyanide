@@ -27,16 +27,13 @@ class LDAPAuth extends SecureTokenAuth
 	{
 		$config = Configuration::getInstance();
 		$ldapManager = new LDAPManager($config->getConfig("ldap.host"), "ide", $config->getConfig("ldap.ideuser.password"));
-		$groups = $ldapManager->getGroupsForUser($username);
+		$groupNamePrefix = $config->getConfig("ldap.team.prefix");
+		$groups = $ldapManager->getGroupsForUser($username, $groupNamePrefix.'*');
 		$teams = array();
 
 		foreach ($groups as $group)
 		{
-			$groupNamePrefix = $config->getConfig("ldap.team.prefix");
-			if (stripos($group["cn"], $groupNamePrefix) === 0)
-			{
-				$teams[] = substr($group["cn"], strlen($groupNamePrefix));
-			}
+			$teams[] = substr($group, strlen($groupNamePrefix));
 		}
 
 		return $teams;
@@ -48,16 +45,10 @@ class LDAPAuth extends SecureTokenAuth
 		$adminName = $config->getConfig("ldap.admin_group");
 		$user = $this->ldapManager->getUser();
 		$IDEldapManager = new LDAPManager($config->getConfig("ldap.host"), "ide", $config->getConfig("ldap.ideuser.password"));
-		$groups = $IDEldapManager->getGroupsForUser($user);
-		foreach ($groups as $group)
-		{
-			if ($group["cn"] == $adminName)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		$groups = $IDEldapManager->getGroupsForUser($user, $adminName);
+		// should either be 0 or 1 responses...
+		$isAdmin = count($groups) > 0;
+		return $isAdmin;
 	}
 
 	public function displayNameForUser($user)
