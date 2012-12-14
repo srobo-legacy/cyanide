@@ -165,7 +165,7 @@ function ErrorsPage() {
 			return;
 
 		for( var i in this.eflist ) {
-			if(this.eflist[i] != null)
+			if(this.eflist[i] != null && this.eflist[i].hasOwnProperty('remove'))
 				this.eflist[i].remove();
 		}
 		this.eflist = new Array();
