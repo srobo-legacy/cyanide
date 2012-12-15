@@ -147,6 +147,11 @@ Admin.prototype._receiveGetItemsToReview = function(nodes) {
 			           };
 			content = A(opts, content);
 		}
+		if ( field == 'image' ) {
+			var opts = { src: "data:image/png;base64," + content.base64 }
+			valid_value = content.md5;
+			content = IMG(opts);
+		}
 		content = TD(null, content);
 
 		var accept = BUTTON(null, 'Accept');

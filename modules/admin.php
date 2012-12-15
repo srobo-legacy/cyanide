@@ -51,7 +51,7 @@ class AdminModule extends Module
         $allTeams = TeamStatus::listAllTeams();
         $teams = array_filter($allTeams, function($team) {
             $status = new TeamStatus($team);
-            return $status->needsReview('image');
+            return $status->needsReview();
         });
 
         $output = Output::getInstance();
@@ -74,7 +74,14 @@ class AdminModule extends Module
 
         $itemsToReview = $status->itemsForReview();
 
-        unset($itemsToReview['image']);
+        if (isset($itemsToReview['image']))
+        {
+            $itemsToReview['image'] = self::getImageForReview($team);
+            if (empty($itemsToReview['image']))
+            {
+                unset($itemsToReview['image']);
+            }
+        }
 
         $output = Output::getInstance();
         $output->setOutput('items', $itemsToReview);
@@ -96,11 +103,6 @@ class AdminModule extends Module
         $value = $input->getInput('value');
         $item = $input->getInput('item');
 
-        if ($item == 'image')
-        {
-            throw new Exception('Cannot review images through the IDE', E_MALFORMED_REQUEST);
-        }
-
         $status->setReviewState($item, $value, $isValid);
         $user = AuthBackend::getInstance()->getCurrentUser();
         $saved = $status->save($user);
@@ -109,5 +111,35 @@ class AdminModule extends Module
             throw new Exception('Failed to save review', E_INTERNAL_ERROR);
         }
         return true;
+    }
+
+    /**
+     * Get the image data to review.
+     * This contains a base64 encoded version of the image, as well as
+     * the expected height & width of it, and the md5.
+     */
+    private static function getImageForReview($team)
+    {
+        $config = Configuration::getInstance();
+        $uploadLocation = $config->getConfig('team.status_images.dir');
+        $imagePath = "$uploadLocation/$team.png";
+        if (!is_dir($uploadLocation) || !file_exists($imagePath))
+        {
+            return null;
+        }
+
+        if ( ($fileData = file_get_contents($imagePath)) === false )
+        {
+            return null;
+        }
+        $fileData64 = base64_encode($fileData);
+
+        $md5 = md5($fileData);
+
+        $info = new stdClass();
+        $info->md5 = $md5;
+        $info->base64 = $fileData64;
+
+        return $info;
     }
 }
