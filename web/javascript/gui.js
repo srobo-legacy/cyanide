@@ -1,5 +1,6 @@
 // Initialise to an invalid team number
-team = 0; /*The current team number*/
+
+team = null; /* The current team id */
 
 MAX_TAB_NAME_LENGTH = 8;
 
@@ -11,9 +12,6 @@ var projpage = null;
 
 // The simulator page
 var simpage = null;
-
-// The project tab
-var projtab = null;
 
 // The edit page
 var editpage = null;
@@ -45,10 +43,6 @@ var diffpage = null;
 // The about box
 var about = null;
 
-// The initial onchange event ident connected to the tabbar
-// Gets disconnected as soon as a team is selected
-var tabchange_ident = null;
-
 function logErrorNice(err) {
 	if (typeof(err) != 'string') {
 		var locLen = window.location.href.length;
@@ -70,33 +64,34 @@ addLoadEvent( function() {
 	user = new User();
 	var d = user.load();
 	// Wait for the user information to come back
-	d.addCallback( load_select_team );
+	d.addCallback( load_gui );
 	d.addErrback( function(err) {
 		logErrorNice(err);
 		window.alert("Failed to get user info: " + err);
 	} );
+	load_gui_initial();
 });
 
-// 1) executed after the user's information has been acquired
-function load_select_team() {
-	// Got the user information -- now get team information
-	team_selector = new TeamSelector();
-
-	projpage = new ProjPage();
-	connect( team_selector, "onchange", bind(projpage.set_team, projpage) );
-	tabchange_ident = connect( team_selector, "onchange", load_gui );
-
-	// Triggers the signals from the team selector
-	team_selector.load();
+function validate_team() {
+	if ( team == null || team == 0 ) {
+		this._prompt = status_msg("You must select a team", LEVEL_WARN);
+		return false;
+	}
+	return true;
 }
 
-// 2) Executed once we have team
-function load_gui() {
-	logDebug( "load_gui" );
-	// We don't want this function to be called again
-	disconnect( tabchange_ident );
+// 1) Load the initial UI elements - those that don't need a team to get going
+function load_gui_initial() {
+	logDebug( "load_gui_initial" );
 
+	// Team selector
+	team_selector = new TeamSelector();
+
+	// Main tab well
 	tabbar = new TabBar();
+
+	// Projects page
+	projpage = new ProjPage(team_selector);
 
 	// Edit page
 	editpage = new EditPage();
@@ -112,6 +107,11 @@ function load_gui() {
 
 	//The Admin page - this must happen before populate_shortcuts_box is called
 	adminpage = new Admin();
+}
+
+// 2) Executed once we have user details
+function load_gui() {
+	logDebug( "load_gui" );
 
 	var shortcutsList = populate_shortcuts_box();
 
@@ -124,11 +124,11 @@ function load_gui() {
 	addElementClass(sbutton._a ,"shortcutButton"); /* add its own class so it can be styled individually */
 	tabbar.add_tab( sbutton );
 
-	// Projects tab
-	projtab = new Tab( "Projects", {can_close:false} );
-	connect( projtab, "onfocus", bind( projpage.show, projpage ) );
-	connect( projtab, "onblur", bind( projpage.hide, projpage ) );
-	tabbar.add_tab( projtab );
+	// Now that the UI is ready, and we have all the info needed so far,
+	// show the user the team selector.
+	// Since this could load the project page (via a default team), it
+	// needs to be after we add the shortcuts box to the tabbar.
+	team_selector.load();
 
 	// Simulator tab
 	//simpage = new SimPage();
@@ -143,11 +143,6 @@ function load_gui() {
 	errorspage = new ErrorsPage();
 
 	robolog = new RoboLog();
-
-	//The selection operations
-	sel_operations = new ProjOps();
-
-	tabbar.switch_to( projtab );
 }
 
 function on_doc_keydown(ev) {
@@ -440,6 +435,11 @@ function TeamSelector() {
 
 		if( user.teams.length == 1 )
 			team = user.teams[0];
+		else if ( user.teams.length == 0 )
+		{
+			replaceChildNodes( "teaminfo", SPAN("You are not in any teams!") );
+			return;
+		}
 		else
 		{
 			var olist = [];
