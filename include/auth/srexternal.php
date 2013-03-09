@@ -124,4 +124,11 @@ class SRExternalAuth extends SecureTokenAuth
 	{
 		return $user . "@" . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'example.com');
 	}
+
+	public function deauthUser()
+	{
+		parent::deauthUser();
+		$next = $this->ssoClient->GetLogoutUri();
+		Output::getInstance()->setOutput('next', $next);
+	}
 }
