@@ -405,7 +405,11 @@ function User() {
 	}
 
 	this._logout_success = function(nodes) {
-		window.location.reload();
+		if (nodes != null && nodes.next != null) {
+			window.location = nodes.next;
+		} else {
+			window.location.reload();
+		}
 	}
 
 	this._logout_error = function(nodes) {
