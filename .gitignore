@@ -5,6 +5,8 @@ zips/
 settings/*
 config/local.ini
 config/automagic.ini
+config/ide
+config/ide.pub
 /applet/.classpath
 /applet/.project
 /applet/test-only-applet-key.crt

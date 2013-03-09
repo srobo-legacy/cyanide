@@ -10,3 +10,6 @@
 [submodule "web/javascript/ace"]
 	path = web/javascript/ace
 	url = git://github.com/ajaxorg/ace-builds.git
+[submodule "include/auth/external-auth"]
+	path = include/auth/external-auth
+	url = git://srobo.org/external-auth.git
