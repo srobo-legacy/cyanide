@@ -133,9 +133,6 @@ function load_gui() {
 	// Simulator tab
 	//simpage = new SimPage();
 
-	// Checkout handler
-	Checkout.GetInstance().init();
-
 	// Diff Page
 	diffpage = new DiffPage();
 
