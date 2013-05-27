@@ -71,7 +71,7 @@ Browser.prototype._init = function() {
 		projlist.update(team);
 		// The selection box for selecting a project
 		this._selector = new ProjSelect(projlist, $("browser-project-select"));
-		connect( this._selector, "onchange", bind( this._getFileTree, this, team ) );
+		connect( this._selector, "onchange", bind(this._getFileTree, this) );
 	}
 
 	//clear previous events
@@ -140,18 +140,18 @@ Browser.prototype._errorReceiveTree = function(a) {
 	signal("left-pane", 'onclick');
 }
 
-Browser.prototype._getFileTree = function(tm) {
-	if($("browser-project-select").options[$("browser-project-select").selectedIndex].id == 'projlist-tmpitem')
+Browser.prototype._getFileTree = function(project, tm) {
+	// Initial load
+	if (project == '') {
 		return;
+	}
 
 	this._receiveTree({tree:[{autosave:0,children:[],kind:'FOLDER',name:'Loading...',path:'@',rev:-1}]});
 	$('save-new-file').disabled = true;
 
-	IDE_backend_request("file/compat-tree", {team: tm,
-	                                         project: $("browser-project-select").value},
-	                                         bind(this._receiveTree, this),
-	                                         bind(this._errorReceiveTree, this,
-	                                              $("browser-project-select").value));
+	IDE_backend_request("file/compat-tree", {team: tm, project: project},
+	                                        bind(this._receiveTree, this),
+	                                        bind(this._errorReceiveTree, this, project));
 }
 
 Browser.prototype._badCommitMsg = function(msg) {
