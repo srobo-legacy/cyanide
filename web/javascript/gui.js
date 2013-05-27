@@ -39,6 +39,9 @@ var teamstatuspage = null;
 // The Admin page
 var adminpage = null;
 
+// The Search page
+var searchpage = null;
+
 // The Diff page
 var diffpage = null;
 
@@ -112,6 +115,9 @@ function load_gui() {
 
 	//The Admin page - this must happen before populate_shortcuts_box is called
 	adminpage = new Admin();
+
+	//The Search page - this must happen before populate_shortcuts_box is called
+	searchpage = new SearchPage();
 
 	var shortcutsList = populate_shortcuts_box();
 
@@ -218,6 +224,11 @@ function populate_shortcuts_box() {
 	shortcuts.push(newShortcut( "User settings",
 		"Change user settings",
 		bind(settingspage.init, settingspage)
+	));
+
+	shortcuts.push(newShortcut( "Search",
+		"Search for things within the IDE",
+		bind(searchpage.init, searchpage)
 	));
 
 	shortcuts.push(newShortcut( "Team Status",

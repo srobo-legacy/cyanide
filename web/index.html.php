@@ -16,6 +16,7 @@
 	<link rel="stylesheet" type="text/css" href="web/css/log.css">
 	<link rel="stylesheet" type="text/css" href="web/css/menubar.css">
 	<link rel="stylesheet" type="text/css" href="web/css/projpage.css">
+	<link rel="stylesheet" type="text/css" href="web/css/search.css">
 	<link rel="stylesheet" type="text/css" href="web/css/settings.css">
 	<link rel="stylesheet" type="text/css" href="web/css/team-status.css">
 	<!-- Javascript Source Files -->
@@ -37,6 +38,7 @@
 	<script type="text/javascript" src="web/javascript/poll.js"></script>
 	<script type="text/javascript" src="web/javascript/projpage.js"></script>
 	<script type="text/javascript" src="web/javascript/robolog.js"></script>
+	<script type="text/javascript" src="web/javascript/search.js"></script>
 	<script type="text/javascript" src="web/javascript/settings.js"></script>
 	<script type="text/javascript" src="web/javascript/team-status.js"></script>
 	<script type="text/javascript" src="web/javascript/status.js"></script>
@@ -159,6 +161,22 @@
 			</div>
 			<div id="editpage-acebox"></div>
 		</div>
+
+		<div id="search-page" class="page">
+			<!-- Search Page -->
+			<div class="menu-bar">
+				<form action="" id="search-form">
+					<ul id="searchmenu">
+						<li><button type="button" id="search-clear-results" title="Clear all the search results.">Clear</button></li>
+						<li><input id="search-query" placeholder="Enter something to search for." title="Enter something to search for." /></li>
+						<li><button type="submit" id="search-go" title="Begins the search.">Search</button></li>
+						<li><button type="button" id="search-close" title="Close the search page.">Close</button></li>
+					</ul>
+				</form>
+				<div class="ie6-prop-clear" style="clear:both;"></div>
+			</div>
+			<div id="search-results"></div>
+		</div><!-- end search page -->
 
 		<div id="log-mode" class="page">
 			<!-- Log Viewer -->
