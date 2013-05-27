@@ -156,3 +156,10 @@ function IDE_java_enabled() {
 function IDE_string_empty(str) {
 	return str == null || /^\s*$/.test(str);
 }
+
+// Extend string with an endsWith method.
+if (typeof String.prototype.endsWith !== 'function') {
+	String.prototype.endsWith = function(suffix) {
+		return this.indexOf(suffix, this.length - suffix.length) !== -1;
+	};
+}
