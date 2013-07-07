@@ -39,7 +39,11 @@ class UserModule extends Module
 		$teams = array();
 		foreach ($teamNumbers as $id)
 		{
-			$teams[$id] = $this->displayNameForTeam($id);
+			$teamInfo = new stdClass();
+			$teamInfo->id = $id;
+			$teamInfo->name = $this->displayNameForTeam($id);
+
+			$teams[] = $teamInfo;
 		}
 
 		$output->setOutput('display-name', $auth->displayNameForUser($this->username));
