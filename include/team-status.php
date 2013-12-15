@@ -72,6 +72,10 @@ class TeamStatus
 	 */
 	public function setDraft($name, $value)
 	{
+		if (!isset($this->statusData->$name))
+		{
+			$this->statusData->$name = new stdClass();
+		}
 		if (!isset($this->statusData->$name->draft) || $this->statusData->$name->draft != $value)
 		{
 			$this->statusData->$name->draft = $value;
